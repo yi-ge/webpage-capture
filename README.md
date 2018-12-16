@@ -1,3 +1,3 @@
 # Webpage Capture
 
-Webpage snapshot by [puppeteer](https://github.com/GoogleChrome/puppeteer).
+Webpage snapshot API using [puppeteer](https://github.com/GoogleChrome/puppeteer).

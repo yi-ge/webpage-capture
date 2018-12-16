@@ -1,7 +1,7 @@
 {
   "name": "webpage-capture",
   "version": "1.0.0",
-  "description": "Webpage snapshot by puppeteer.",
+  "description": "Webpage snapshot API using puppeteer.",
   "main": "index.js",
   "repository": "https://github.com/yi-ge/webpage-capture",
   "author": "yi-ge <a@wyr.me>",
