@@ -2,7 +2,6 @@ const Joi = require('joi')
 const redis = require('../lib/redis')
 const q = require('../lib/kue')
 const axios = require('axios')
-const uuid = require('uuid/v4')
 const { kueAuthConfig, kueApiConfig, kueServerConfig } = require('../config')
 
 const $request = axios.create({

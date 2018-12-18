@@ -35,6 +35,7 @@ const redis = require('./lib/redis')
         try {
           downloadUrl = await snapshot(job.data.url, job.data.proxy)
         } catch (err) {
+          console.log('执行快照发生错误：')
           console.log(err)
           done(err)
         }

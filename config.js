@@ -1,3 +1,6 @@
+const axios = require('axios')
+const redis = require('./lib/redis')
+
 module.exports = {
   serverConfig: {
     host: 'localhost',
@@ -35,5 +38,20 @@ module.exports = {
   },
   kueApiConfig: {
     path: '/kue-api'
+  },
+  proxyIP: {
+    async get () {
+      const expireTime = await redis.client.getAsync('ip_expire_time')
+      if (expireTime === null || Date.parse(expireTime) < (Date.parse(new Date()) - 5000)) {
+        const { data } = await axios.get('http://')
+        if (data.code === 0) {
+          await redis.client.setAsync('ip', data.data[0].ip + ':' + data.data[0].port)
+          await redis.client.setAsync('ip_expire_time', data.data[0].expire_time)
+          return data.data[0].ip + ':' + data.data[0].port
+        }
+      } else {
+        return redis.client.getAsync('ip')
+      }
+    }
   }
 }
