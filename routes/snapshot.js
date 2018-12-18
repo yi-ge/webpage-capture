@@ -12,15 +12,14 @@ const $request = axios.create({
   }
 })
 
-const GROUP_NAME = 'snapshot';
+const GROUP_NAME = 'snapshot'
 
 module.exports = [
   {
     method: 'GET',
     path: `/${GROUP_NAME}/stats`,
     async handler () {
-
-      try{
+      try {
         const kueStats = await $request.get('/stats')
 
         return {
@@ -47,11 +46,12 @@ module.exports = [
     async handler (request) {
       const application = await redis.client.hgetAsync('token', request.query.token)
 
-      if (!application)
+      if (!application) {
         return {
           status: 3,
           massage: 'token校检失败'
         }
+      }
 
       // 返回所有任务id
 
@@ -83,11 +83,12 @@ module.exports = [
       try {
         const application = await redis.client.hgetAsync('token', request.query.token)
 
-        if (!application)
+        if (!application) {
           return {
             status: 3,
             massage: 'token校检失败'
           }
+        }
 
         const urls = request.payload.urls
         const proxy = request.payload.proxy
@@ -112,14 +113,14 @@ module.exports = [
             url,
             proxy
           }).save((err) => {
-            if (!err) console.log('id:', job.id, '已压入');
+            if (!err) console.log('id:', job.id, '已压入')
           })
         })
 
         q.create('snapshot', {
           key: 't_' + application + '_' + id
         }).save((err) => {
-          if (err) console.log(err);
+          if (err) console.log(err)
         })
 
         return {
@@ -138,7 +139,7 @@ module.exports = [
       validate: {
         payload: {
           urls: Joi.array().items(Joi.string().required().description('URL链接')),
-          proxy: Joi.array().items(Joi.string().description('代理地址')),
+          proxy: Joi.array().items(Joi.string().description('代理地址'))
         },
         query: {
           token: Joi.string().required().description('Token')
@@ -153,11 +154,12 @@ module.exports = [
       const id = request.query.id
       const application = await redis.client.hgetAsync('token', request.query.token)
 
-      if (!application)
+      if (!application) {
         return {
           status: 3,
           massage: 'token校检失败'
         }
+      }
 
       const task = {
         total: redis.client.hlenAsync('t_' + application + '_' + id),
@@ -179,7 +181,7 @@ module.exports = [
             inactive: result[2].data.count,
             failed: result[3].data.count,
             complete: result[4].data.count,
-            delayed: result[5].data.count,
+            delayed: result[5].data.count
           }
         }
       } catch (err) {
@@ -208,11 +210,12 @@ module.exports = [
       const id = request.query.id
       const application = await redis.client.hgetAsync('token', request.query.token)
 
-      if (!application)
+      if (!application) {
         return {
           status: 3,
           massage: 'token校检失败'
         }
+      }
 
       return {
         status: 1,

@@ -39,8 +39,8 @@ const redis = require('./lib/redis')
           console.log(err)
           done(err)
         }
-        
-        if (downloadUrl) { 
+
+        if (downloadUrl) {
           try {
             await redis.client.hsetAsync(qjob.data.key, job.data.url, downloadUrl)
             done()

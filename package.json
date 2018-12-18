@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "baidupanapi": "^1.2.3",
     "basic-auth-connect": "^1.0.0",
     "bluebird": "^3.5.3",
     "express": "^4.16.4",
@@ -26,6 +27,7 @@
     "puppeteer-extra": "^2.1.1",
     "puppeteer-extra-plugin-anonymize-ua": "^2.1.1",
     "puppeteer-extra-plugin-stealth": "^2.1.1",
+    "qiniu": "^7.2.1",
     "redis": "^2.8.0",
     "uuid": "^3.3.2",
     "vision": "^5.4.4"
