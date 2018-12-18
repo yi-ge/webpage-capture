@@ -4,6 +4,8 @@ const { serverConfig } = require('./config')
 const routes = require('./routes')
 const q = require('./lib/kue')
 const snapshot = require('./lib/snapshot')
+const kueServer = require('./plugin/kue-server')
+const redis = require('./lib/redis')
 
 ;(async () => {
   // Create a server with a host and port
@@ -12,6 +14,9 @@ const snapshot = require('./lib/snapshot')
   await server.register([
     ...swagger
   ])
+
+  // 加载kueAPI及kueUI
+  kueServer()
 
   // Start the server
   try {
@@ -23,11 +28,30 @@ const snapshot = require('./lib/snapshot')
     process.exit(1)
   }
 
-  q.process('snapshot', 10, async (job, done) => {
-    const downloadUrl = await snapshot(job.data.url)
-    if (downloadUrl)
-      done()
-    else 
-      down('没有获取到下载地址')
-  });
+  q.process('snapshot', 10, async (qjob, qdone) => {
+    if (qjob.data.key) {
+      q.process(qjob.data.key, 10, async (job, done) => {
+        let downloadUrl = ''
+        try {
+          downloadUrl = await snapshot(job.data.url, job.data.proxy)
+        } catch (err) {
+          console.log(err)
+          done(err)
+        }
+        
+        if (downloadUrl) { 
+          try {
+            await redis.client.hsetAsync(qjob.data.key, job.data.url, downloadUrl)
+            done()
+          } catch (err) {
+            console.log(err)
+            done(err)
+          }
+        } else { done('没有获取到下载地址') }
+      })
+      qdone()
+    } else {
+      qdone('任务异常')
+    }
+  })
 })()

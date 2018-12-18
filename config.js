@@ -1,7 +1,7 @@
 module.exports = {
   serverConfig: {
     host: 'localhost',
-    port: 8080
+    port: 8088
   },
   application: {
     supersecret: 'j2hd7sjw3ioye5G22'
@@ -21,5 +21,19 @@ module.exports = {
     options: {
       // see https://github.com/mranney/node_redis#rediscreateclient
     }
+  },
+  kueAuthConfig: {
+    username: 'yige',
+    password: 'fqJ2i736H2jdis'
+  },
+  kueServerConfig: { // https://nodejs.org/api/net.html#net_server_listen
+    host: 'localhost',
+    port: 3000
+  },
+  kueUIConfig: {
+    path: '/kue/'
+  },
+  kueApiConfig: {
+    path: '/kue-api'
   }
 }

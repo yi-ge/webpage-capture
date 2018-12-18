@@ -56,22 +56,29 @@ module.exports = [{
 
       const lists = request.payload
 
-      lists.map(list => {
-        if (!list.uuid) {
-          list.uuid = uuid()
-          list.token = uuid().replace(/-/g, '')
+      // lists.map(async list => { // 这里是async，不能用map
+      //   if (!list.id) {
+      //     list.id = '' + await redis.client.incrAsync('ids')
+      //     list.token = uuid().replace(/-/g, '')
+      //   }
+      //   return list
+      // })
+
+      for (const n in lists) {
+        if (!lists[n].id) {
+          lists[n].id = (await redis.client.incrAsync('ids')).toString()
+          lists[n].token = uuid().replace(/-/g, '')
         }
-        return list
-      })
+      }
 
       const datas = []
       const tokens = []
 
       for (const n in lists) {
-        datas.push('uuid_' + lists[n].uuid)
+        datas.push('id_' + lists[n].id) // int to string
         datas.push(JSON.stringify(lists[n]))
         tokens.push(lists[n].token)
-        tokens.push(lists[n].uuid)
+        tokens.push(lists[n].id)
       }
 
       const task = [
@@ -96,7 +103,7 @@ module.exports = [{
         }).unknown(),
         payload: Joi.array().items(
           Joi.object().keys({
-            uuid: Joi.string().description('编辑传，添加不传'),
+            id: Joi.string().description('编辑传，添加不传'),
             name: Joi.string().required().description('Application 名称'),
             token: Joi.string().description('编辑传，添加不传')
           }),
@@ -114,7 +121,7 @@ module.exports = [{
           message: '超级密码不正确'
         }
 
-      const tokenResult = await redis.client.hget('application', 'uuid_' + request.payload.uuid)
+      const tokenResult = await redis.client.hget('application', 'id_' + request.payload.id)
 
       const token = JSON.parse(tokenResult).token
 
@@ -125,7 +132,7 @@ module.exports = [{
         }
 
       const task = [
-        redis.client.hdelAsync('application', 'uuid_' + request.payload.uuid),
+        redis.client.hdelAsync('application', 'id_' + request.payload.id),
         redis.client.hdelAsync('token', token)
       ]
 
@@ -142,7 +149,7 @@ module.exports = [{
           'supersecret': Joi.string().required().description('超级密码'),
         }).unknown(),
         payload: {
-          uuid: Joi.string().required().description('要删除的uuid')
+          id: Joi.string().required().description('要删除的id')
         }
       }
     }
