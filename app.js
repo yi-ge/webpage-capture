@@ -28,9 +28,9 @@ const redis = require('./lib/redis')
     process.exit(1)
   }
 
-  q.process('snapshot', 10, async (qjob, qdone) => {
+  q.process('snapshot', 1, async (qjob, qdone) => {
     if (qjob.data.key) {
-      q.process(qjob.data.key, 10, async (job, done) => {
+      q.process(qjob.data.key, 1, async (job, done) => {
         let downloadUrl = ''
         try {
           downloadUrl = await snapshot(job.data.url, job.data.proxy)
