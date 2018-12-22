@@ -3,6 +3,7 @@ module.exports = {
     name: "webpage-capture",
     script: "./app.js",
     mode: "cluster",
-    instances: 4
+    instances: 4,
+    watch: true
   }]
 }
