@@ -4,6 +4,7 @@ const pack = require('../package')
 const hapiSwagger = require('hapi-swagger')
 
 const swaggerOptions = {
+  schemes: ['https'],
   info: {
     title: 'Webpage Capture API Documentation',
     version: pack.version
