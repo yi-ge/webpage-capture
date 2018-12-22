@@ -1,5 +1,5 @@
 const { proxyIP } = require('../config')
 
-module.exports = () => {
-  return proxyIP.get()
+module.exports = (getProxyIP) => {
+  return proxyIP.get(getProxyIP)
 }

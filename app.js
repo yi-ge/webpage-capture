@@ -43,6 +43,7 @@ const redis = require('./lib/redis')
         if (downloadUrl) {
           try {
             await redis.client.hsetAsync(qjob.data.key, job.data.url, downloadUrl)
+            console.log("完成任务：", job.data.url, downloadUrl)
             done()
           } catch (err) {
             console.log(err)
