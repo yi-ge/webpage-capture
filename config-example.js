@@ -41,14 +41,18 @@ module.exports = {
   },
   proxyIP: {
     // 返回一个用于xx的IP地址（包含端口号），这里可能需要自行实现
-    async get () {
+    async get (refresh) {
       const expireTime = await redis.client.getAsync('ip_expire_time')
-      if (expireTime === null || Date.parse(expireTime) < (Date.parse(new Date()) - 5000)) {
-        const { data } = await axios.get('http://xxxx')
+      // if (refresh || expireTime === null || Date.parse(expireTime) - 8 * 3600 < (Date.parse(new Date()) - 5000)) {
+      if (refresh || expireTime === null || Date.parse(expireTime) < (Date.parse(new Date()) - 23800)) {
+        const { data } = await axios.get('http://xxx')
         if (data.code === 0) {
           await redis.client.setAsync('ip', data.data[0].ip + ':' + data.data[0].port)
           await redis.client.setAsync('ip_expire_time', data.data[0].expire_time)
           return data.data[0].ip + ':' + data.data[0].port
+        } else {
+          await sleep(930)
+          return this.get(true)
         }
       } else {
         return redis.client.getAsync('ip')
