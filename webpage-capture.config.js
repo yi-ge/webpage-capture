@@ -2,8 +2,7 @@ module.exports = {
   apps: [{
     name: 'webpage-capture',
     script: './app.js',
-    mode: 'cluster',
-    instances: 1,
+    mode: 'fork',
     watch: true
   }]
 }

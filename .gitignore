@@ -4,3 +4,4 @@ node_modules
 /config.js
 release.sh
 exclude
+/config.yige.js

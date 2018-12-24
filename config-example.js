@@ -1,6 +1,10 @@
 const axios = require('axios')
 const redis = require('./lib/redis')
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+let oldIps = []
+
 module.exports = {
   serverConfig: {
     host: 'localhost',
@@ -40,29 +44,37 @@ module.exports = {
     path: '/kue-api'
   },
   proxyIP: {
-    // 设置服务器IP到代理白名单，需自行实现，如果本地服务器IP发生变更，则自动更新到白名单
-    async setWhiteList () {
-      const { data } = await axios.get('https://ip') // 获取当前服务器IP地址
-      const ip = data.ip
-      if (ip != oldIp) {
-        console.log('检测到服务器IP变更')
-        await axios.get('http://xxx.com' + ip)
-        oldIp = ip
-        axios.get('http://xxx.com' + oldIp)
-      }
-    },
     // 返回一个用于xx的IP地址（包含端口号），这里可能需要自行实现
     async get (refresh) {
       const expireTime = await redis.client.getAsync('ip_expire_time')
-      // if (refresh || expireTime === null || Date.parse(expireTime) - 8 * 3600 < (Date.parse(new Date()) - 5000)) {
       if (refresh || expireTime === null || Date.parse(expireTime) < (Date.parse(new Date()) - 23800)) {
-        const { data } = await axios.get('http://xxx')
+        const { data } = await axios.get('http://getip')
         if (data.code === 0) {
           await redis.client.setAsync('ip', data.data[0].ip + ':' + data.data[0].port)
           await redis.client.setAsync('ip_expire_time', data.data[0].expire_time)
           return data.data[0].ip + ':' + data.data[0].port
-        } else {
-          await sleep(930)
+        } else if (data.code === 113) { // 服务器IP地址变更
+          try {
+            const ips = []
+            const ip = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.exec(data.msg)[0]
+            ips.push(ip)
+            const r = await axios.get('https://ip')
+            if (r.data.ip && r.data.ip !== ip) { ips.push(r.data.ip) }
+            console.log('服务器IP地址发生变更：')
+            console.log('    老IP', oldIps.join(','))
+            console.log('    新IP', ips.join(','))
+            await axios.get('https://xxx.com?white=' + ips.join(','))
+            axios.get('https://xxx.com?white=' + oldIps.join(','))
+            oldIps = ips
+          } catch (err) {
+            console.log(err)
+          }
+          return this.get(true)
+        } else if (data.code === 111) { // 请求频繁
+          await sleep(980)
+          return this.get(true)
+        } else { // 未知异常
+          await sleep(3000)
           return this.get(true)
         }
       } else {
