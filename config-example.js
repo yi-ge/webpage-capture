@@ -40,6 +40,17 @@ module.exports = {
     path: '/kue-api'
   },
   proxyIP: {
+    // 设置服务器IP到代理白名单，需自行实现，如果本地服务器IP发生变更，则自动更新到白名单
+    async setWhiteList () {
+      const { data } = await axios.get('https://ip') // 获取当前服务器IP地址
+      const ip = data.ip
+      if (ip != oldIp) {
+        console.log('检测到服务器IP变更')
+        await axios.get('http://xxx.com' + ip)
+        oldIp = ip
+        axios.get('http://xxx.com' + oldIp)
+      }
+    },
     // 返回一个用于xx的IP地址（包含端口号），这里可能需要自行实现
     async get (refresh) {
       const expireTime = await redis.client.getAsync('ip_expire_time')
