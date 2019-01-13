@@ -2,6 +2,8 @@
 
 Webpage snapshot API using [puppeteer](https://github.com/GoogleChrome/puppeteer).
 
+相关博文：[https://www.wyr.me/post/606](https://www.wyr.me/post/606)
+
 ### Use
 ```
 yarn start
