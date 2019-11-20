@@ -1,6 +1,6 @@
 {
   "name": "webpage-capture",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Webpage snapshot API using puppeteer.",
   "main": "app.js",
   "repository": "https://github.com/yi-ge/webpage-capture",
